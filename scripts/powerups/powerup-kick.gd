@@ -9,9 +9,9 @@ func _physics_process(_delta):
 				kick(col.collider)
 
 func kick(bomb):
-	var dir = player.lastVelocity.normalized().snapped(Vector2(1,1))
+	var vel = player.lastXInput + player.lastYInput
+	var dir = vel.normalized().snapped(Vector2(1,1))
 	if dir != Vector2():
 		if abs(dir.x) == abs(dir.y):
 			dir.y = 0
-		print(dir)
 		bomb.slide(dir)

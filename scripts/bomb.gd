@@ -14,6 +14,7 @@ var exploded = false
 var player
 
 export var slide_speed = 64.0
+export var delay = 2.25
 var move_direction = Vector2()
 
 func _ready():
@@ -40,22 +41,22 @@ func _process(_delta):
 		activateCollision = false
 		_enable_collision()
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if move_direction != Vector2():
-		var col = move_and_collide(move_direction * slide_speed * delta)
-		if col:
-			print("parou")
+		var vel = move_and_slide(move_direction * slide_speed)
+
+		if vel.length() < 5:
 			stop_slide()
 
+		gridPosition = controller.world_to_map(position)
+
 func _on_body_enter(body: PhysicsBody2D):
-	if body != null and body.is_in_group("players"):
-		print("add execao")
+	if move_direction == Vector2() && body != null and body.is_in_group("players"):
 		body.add_collision_exception_with(self)
 		body.isOverBomb = true
 
 func _on_body_exit(body: PhysicsBody2D):
 	if body != null:
-		print("removeu excecao")
 		body.remove_collision_exception_with(self)
 		if body.is_in_group("players"):
 			body.isOverBomb = false
@@ -72,7 +73,7 @@ func spawn(pos: Vector2):
 	position = pos
 	activateCollision = true
 	$Sprite.visible = true
-	timer.start()
+	timer.start(delay)
 
 func explode():
 	if not exploded:
@@ -158,7 +159,6 @@ func _instance_explosion_sprites():
 
 func slide(direction: Vector2):
 	move_direction = direction
-	print(direction)
 
 func stop_slide():
 	move_direction = Vector2()
