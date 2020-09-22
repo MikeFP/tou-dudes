@@ -9,3 +9,5 @@ func test_routine():
 	yield(get_tree(), "idle_frame")
 	controller.instance_powerup(2, 1, "ammo")
 	controller.instance_powerup(2, 3, "intensity")
+	controller.instance_powerup(2, 5, "speed")
+	controller.instance_powerup(2, 7, "kick")

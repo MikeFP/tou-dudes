@@ -1,8 +1,7 @@
 extends KinematicBody2D
 var bomb_scene = preload("res://scenes/bomb.tscn")
 
-# Member variables
-const MOTION_SPEED = 48 # Pixels/second
+var speed = 48
 var id
 var gaze = 0
 var isIdle = true
@@ -12,17 +11,17 @@ var alive = true
 var maxBombs = 1
 var bombCount = 0
 var isOverBomb = false
+var lastXInput = Vector2()
+var lastYInput = Vector2()
+var lastVelocity = Vector2()
 
 onready var controller = get_parent()
 
 func _ready():
 	anim = get_node("Sprite/AnimationPlayer")
 
-func handle_action(action: String):
-	pass
-
-func _process(delta):
-	z_index = position.y
+func _process(_delta):
+	z_index = int(position.y)
 	if InputHandler.is_action_pressed("main_action_1", self):
 		try_spawn_bomb()
 
@@ -41,7 +40,7 @@ func _physics_process(_delta):
 	elif InputHandler.is_action_pressed("move_left", self):
 		xInput = Vector2(-1, 0)
 	
-	motion = (yInput + xInput).normalized() * MOTION_SPEED
+	motion = (yInput + xInput).normalized() * speed
 	
 	var newV = move_and_slide(motion, Vector2(), false, 1)
 	position = oldPos
@@ -61,7 +60,7 @@ func _physics_process(_delta):
 			else:
 				gaze = 0 # facing down
 	
-	motion = newV.normalized() * MOTION_SPEED
+	motion = newV.normalized() * speed
 	
 	if newV.dot(motion.normalized()) >= 1:
 		newV = move_and_slide(motion).normalized()
@@ -94,12 +93,16 @@ func _physics_process(_delta):
 		2:
 			anim.play(stance + " Back")
 
+	lastXInput = xInput
+	lastYInput = yInput
+	lastVelocity = newV
+
 func try_spawn_bomb():
 	if bombCount < maxBombs:
 		var gridPosition = controller.world_to_map(position)
 		
 		var canSpawn = true
-		var bombs = get_parent().get_tree().get_nodes_in_group("bomb scripts")
+		var bombs = get_parent().get_tree().get_nodes_in_group("bombs")
 		for b in bombs:
 			if b.gridPosition == gridPosition:
 				canSpawn = false
@@ -128,3 +131,6 @@ func increase_max_bombs():
 
 func increase_intensity(quantity = 1):
 	intensity += quantity
+
+func increase_speed(units_per_second = 8):
+	speed += units_per_second

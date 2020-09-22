@@ -32,13 +32,6 @@ func _ready():
 		p.id = i
 		i += 1
 
-func _input(event):
-	for p in range(bindings.size()):
-		var bind = bindings[p]
-		for i in range(bind.keys().size()):
-			if bind.values()[i] == event.as_text():
-				players[p].handle_action(bind.keys()[i])
-
 func is_action_just_pressed(action: String, player: Node2D):
 	return Input.is_action_just_pressed(action + "_p" + str(player.id + 1))
 

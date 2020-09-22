@@ -1,4 +1,4 @@
 extends Powerup
 
-func on_player_consumed(player):
+func on_player_consumed():
 	player.increase_intensity()

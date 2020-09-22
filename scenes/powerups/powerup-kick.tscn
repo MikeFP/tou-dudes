@@ -1,19 +1,19 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://scripts/powerups/powerup-ammo.gd" type="Script" id=1]
-[ext_resource path="res://shaders/border-color.tres" type="Material" id=2]
-[ext_resource path="res://sprites/powerups/ammo.png" type="Texture" id=3]
+[ext_resource path="res://shaders/border-color.tres" type="Material" id=1]
+[ext_resource path="res://scripts/powerups/powerup-kick.gd" type="Script" id=2]
+[ext_resource path="res://sprites/powerups/kick.png" type="Texture" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 7, 7 )
 
-[node name="powerup-ammo" type="Sprite" groups=[
+[node name="powerup-kick" type="Sprite" groups=[
 "powerups",
 ]]
-material = ExtResource( 2 )
+material = ExtResource( 1 )
 texture = ExtResource( 3 )
 centered = false
-script = ExtResource( 1 )
+script = ExtResource( 2 )
 
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2( 8, 8 )

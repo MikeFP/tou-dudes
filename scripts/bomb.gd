@@ -1,10 +1,9 @@
-extends Node2D
+extends KinematicBody2D
 var explosion_scene = preload("res://scenes/explosion.tscn")
 
 var timer
 var area2d
 var collider
-var kb
 var anim
 var controller
 
@@ -13,6 +12,9 @@ var intensity = 2
 var gridPosition = Vector2()
 var exploded = false
 var player
+
+export var slide_speed = 64.0
+var move_direction = Vector2()
 
 func _ready():
 
@@ -26,8 +28,7 @@ func _ready():
 	area2d.connect("body_entered", self, "_on_body_enter")
 	area2d.connect("body_exited", self, "_on_body_exit")
 	
-	kb = $KinematicBody2D
-	collider = kb.get_node("CollisionShape2D")
+	collider = get_node("CollisionShape2D")
 	_disable_collision()
 	
 	$Sprite.visible = false
@@ -39,14 +40,23 @@ func _process(_delta):
 		activateCollision = false
 		_enable_collision()
 
+func _physics_process(delta):
+	if move_direction != Vector2():
+		var col = move_and_collide(move_direction * slide_speed * delta)
+		if col:
+			print("parou")
+			stop_slide()
+
 func _on_body_enter(body: PhysicsBody2D):
 	if body != null and body.is_in_group("players"):
-		body.add_collision_exception_with(kb)
+		print("add execao")
+		body.add_collision_exception_with(self)
 		body.isOverBomb = true
 
 func _on_body_exit(body: PhysicsBody2D):
 	if body != null:
-		body.remove_collision_exception_with(kb)
+		print("removeu excecao")
+		body.remove_collision_exception_with(self)
 		if body.is_in_group("players"):
 			body.isOverBomb = false
 
@@ -145,3 +155,10 @@ func _instance_explosion_sprites():
 		
 		if i >= directions.size():
 			over = true
+
+func slide(direction: Vector2):
+	move_direction = direction
+	print(direction)
+
+func stop_slide():
+	move_direction = Vector2()
