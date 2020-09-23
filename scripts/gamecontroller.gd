@@ -8,6 +8,8 @@ export var generate_deconstructs = true
 export var borderShaderMaterial: ShaderMaterial
 export var glowColor: Color
 
+const CELL_WIDTH = 16
+
 onready var tileMap: TileMap = $TileMap
 
 var rng = RandomNumberGenerator.new()

@@ -1,7 +1,7 @@
 extends KinematicBody2D
 var explosion_scene = preload("res://scenes/explosion.tscn")
 
-var timer
+var timer: Timer
 var area2d
 var collider
 var anim
@@ -12,10 +12,14 @@ var intensity = 2
 var gridPosition = Vector2()
 var exploded = false
 var player
+var carrier
 
 export var slide_speed = 64.0
 export var delay = 2.25
+export var throw_duration = 0.25
 var move_direction = Vector2()
+
+onready var tween: Tween = $Tween
 
 func _ready():
 
@@ -48,7 +52,7 @@ func _physics_process(_delta):
 		if vel.length() < 5:
 			stop_slide()
 
-		gridPosition = controller.world_to_map(position)
+		update_grid_position()
 
 func _on_body_enter(body: PhysicsBody2D):
 	if move_direction == Vector2() && body != null and body.is_in_group("players"):
@@ -62,15 +66,15 @@ func _on_body_exit(body: PhysicsBody2D):
 			body.isOverBomb = false
 
 func _enable_collision():
-	collider.disabled = false
 	collider.set_deferred("disabled", false)
 
 func _disable_collision():
-	collider.disabled = true
 	collider.set_deferred("disabled", true)
 
 func spawn(pos: Vector2):
 	position = pos
+	snap_to_grid()
+
 	activateCollision = true
 	$Sprite.visible = true
 	timer.start(delay)
@@ -162,3 +166,38 @@ func slide(direction: Vector2):
 
 func stop_slide():
 	move_direction = Vector2()
+
+func throw(target: Vector2):
+	_disable_collision()
+	suspend_timer()
+
+	var max_y = position.y - controller.CELL_WIDTH * 1
+
+	tween.interpolate_property(self, "position:x",
+        position.x, target.x, throw_duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
+	tween.interpolate_property(self, "position:y",
+		position.y, max_y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_OUT)
+	tween.interpolate_property(self, "position:y",
+		max_y, target.y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_IN, throw_duration/2)
+	tween.start()
+
+	yield(tween, "tween_all_completed")
+
+	resume_timer()
+	_enable_collision()
+
+	position = target
+	snap_to_grid()
+
+func snap_to_grid():
+	update_grid_position()
+	position = controller.map_to_world(gridPosition) + Vector2(8, 8)
+
+func update_grid_position():
+	gridPosition = controller.world_to_map(position)
+
+func suspend_timer():
+	timer.paused = true
+
+func resume_timer():
+	timer.paused = false

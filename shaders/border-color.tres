@@ -11,8 +11,8 @@ void fragment() {
 	vec2 pixel = vec2(UV.x * texture_size.x, UV.y * texture_size.y);
 	
 	COLOR = texture(TEXTURE, UV);
-	if (pixel.x < border || pixel.x > texture_size.x - border ||
-		pixel.y < border || pixel.y > texture_size.y - border) {
+	if (COLOR.a == 0.0 && (pixel.x < border || pixel.x > texture_size.x - border ||
+		pixel.y < border || pixel.y > texture_size.y - border)) {
 		COLOR = new_color;
 	}
 }"
