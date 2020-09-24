@@ -28,6 +28,7 @@ config/icon="res://icon.png"
 
 InputHandler="*res://scripts/InputHandler.gd"
 Provider="*res://scripts/autoloads/provider.gd"
+Global="*res://scripts/autoloads/global.gd"
 
 [display]
 

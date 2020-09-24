@@ -10,6 +10,8 @@ export var glowColor: Color
 
 const CELL_WIDTH = 16
 
+var TileType = Global.TileType
+
 onready var tileMap: TileMap = $TileMap
 
 var rng = RandomNumberGenerator.new()
@@ -20,10 +22,10 @@ var transition = 0
 var powerups = []
 
 var cellTypeIds = {
-	"struct": -1,
-	"bound": -1,
-	"wall": -1,
-	"ground": -1
+	TileType.DESTRUCTURE: -1,
+	TileType.BOUNDS: -1,
+	TileType.WALL: -1,
+	TileType.GROUND: -1
 }
 
 var cellTypeIndexes = {}
@@ -38,7 +40,7 @@ func _ready():
 	for id in tileMap.tile_set.get_tiles_ids():
 		var tileName = tileMap.tile_set.tile_get_name(id)
 		for type in cellTypeIds:
-			if tileName.find(type) != -1:
+			if tileName.find(Global.enum_as_string(TileType, type).to_lower()) != -1:
 				cellTypeIds[type] = id
 				break
 
@@ -77,7 +79,7 @@ func _generate_map():
 	var l = 0
 	var c = 0
 	
-	var tileType = "ground"
+	var tileType = TileType.GROUND
 	var tileMatrix = []
 	var tileArray = []
 	
@@ -91,13 +93,13 @@ func _generate_map():
 		Vector2(11, 0)
 	]
 	
-	while l != n and c != n:
+	while l != n && c != n:
 		
-		tileType = "wall"
-		if l % 2 == 0 or c % 2 == 0:
-			tileType = "ground"
+		tileType = TileType.WALL
+		if l % 2 == 0 || c % 2 == 0:
+			tileType = TileType.GROUND
 			
-		if generate_deconstructs and tileType == "ground" and not (Vector2(c, l) in blankSpaces):
+		if generate_deconstructs && tileType == TileType.GROUND && !(Vector2(c, l) in blankSpaces):
 			if rng.randf() < destructRatio:
 				instance_destructure(c + 1, l + 1)
 
@@ -115,7 +117,7 @@ func _generate_map():
 	for line in tileMatrix:
 		for type in line:
 			tileMap.set_cell(c, l, cellTypeIds[type])
-			if type != "ground":
+			if type != TileType.GROUND:
 				register_cell_content(c, l, type)
 			c += 1
 		l += 1
@@ -162,7 +164,7 @@ func get_cell_content(col, line):
 		return grid_map[col][line]
 
 	var tile = tileMap.get_cell(col, line)
-	if tile != -1 and tile != cellTypeIds["ground"]:
+	if tile != -1 and tile != cellTypeIds[TileType.GROUND]:
 		for type in cellTypeIds:
 			if cellTypeIds[type] == tile:
 				register_cell_content(col, line, type)

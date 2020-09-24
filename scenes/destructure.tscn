@@ -2,7 +2,8 @@
 
 [ext_resource path="res://scripts/destructure.gd" type="Script" id=1]
 [ext_resource path="res://sprites/tiles/tile_struct_brick_destroy.png" type="Texture" id=2]
-[ext_resource path="res://sprites/tiles/tile_destruct_brick.png" type="Texture" id=3]
+[ext_resource path="res://sprites/tiles/tile_destructure_brick.png" type="Texture" id=3]
+
 
 [sub_resource type="Animation" id=1]
 resource_name = "Destroy"

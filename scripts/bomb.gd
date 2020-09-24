@@ -45,11 +45,17 @@ func _process(_delta):
 		activateCollision = false
 		_enable_collision()
 
-func _physics_process(_delta):
+func _physics_process(delta):
 	if move_direction != Vector2():
-		var vel = move_and_slide(move_direction * slide_speed)
+		var col = move_and_collide(move_direction * slide_speed * delta, true, true, true)
 
-		if vel.length() < 5:
+		var angle
+		if col:
+			angle = rad2deg(col.normal.angle_to(move_direction))
+
+		if !col || (abs(angle) > 60 && abs(angle) < 120):
+			position += move_direction * slide_speed * delta
+		else:
 			stop_slide()
 
 		update_grid_position()
@@ -143,7 +149,7 @@ func _instance_explosion_sprites():
 		
 		if len(content) > 0:
 			var what = content[-1]
-			if typeof(what) != TYPE_STRING and what.has_method("destroy"):
+			if typeof(what) != TYPE_INT && what.has_method("destroy"):
 				what.destroy()
 				
 			if isBody:
@@ -166,6 +172,7 @@ func slide(direction: Vector2):
 
 func stop_slide():
 	move_direction = Vector2()
+	snap_to_grid()
 
 func throw(target: Vector2):
 	_disable_collision()
@@ -174,7 +181,7 @@ func throw(target: Vector2):
 	var max_y = position.y - controller.CELL_WIDTH * 1
 
 	tween.interpolate_property(self, "position:x",
-        position.x, target.x, throw_duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
+		position.x, target.x, throw_duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
 	tween.interpolate_property(self, "position:y",
 		position.y, max_y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_OUT)
 	tween.interpolate_property(self, "position:y",
