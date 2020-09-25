@@ -6,7 +6,7 @@ var controller
 var activateCollision = false
 var intensity = 2
 var gridPosition = Vector2()
-var exploded = false
+var has_exploded = false
 var player
 var carrier
 
@@ -21,6 +21,8 @@ onready var timer := $Timer
 onready var area2d := $Area2D
 onready var collider := $CollisionShape2D
 
+signal exploded
+
 func _ready():
 	anim.play("Charging")
 	
@@ -33,7 +35,7 @@ func _ready():
 	
 	$Sprite.visible = false
 	activateCollision = false
-	exploded = false
+	has_exploded = false
 
 func _process(_delta):
 	if collider.disabled and activateCollision:
@@ -81,9 +83,9 @@ func spawn(pos: Vector2):
 	timer.start(delay)
 
 func explode():
-	if not exploded:
+	if !has_exploded:
 		disable_collision()
-		exploded = true
+		has_exploded = true
 		
 		anim.stop()
 		timer.stop()
@@ -94,6 +96,7 @@ func explode():
 		controller.delete_cell_content(gridPosition.x, gridPosition.y, self)
 		player.bombCount -= 1
 
+		emit_signal("exploded")
 		queue_free()
 	
 

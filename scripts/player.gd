@@ -212,9 +212,10 @@ func lift(bomb):
 		controller.delete_cell_content(bomb.gridPosition.x, bomb.gridPosition.y, bomb)
 
 func _start_holding():
-	holdingBomb = true
-	liftingBomb.suspend_timer()
-	liftingBomb.disable_collision()
+	if liftingBomb != null:
+		holdingBomb = true
+		liftingBomb.suspend_timer()
+		liftingBomb.disable_collision()
 
 func throw():
 	if liftingBomb != null:
