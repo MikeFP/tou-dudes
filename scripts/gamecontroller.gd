@@ -149,15 +149,22 @@ func register_cell_content(col, line, content):
 		grid_map[col] = {}
 	if !grid_map[col].has(line):
 		grid_map[col][line] = []
-	grid_map[col][line].append(content)
+	if !(content in grid_map[col][line]):
+		grid_map[col][line].append(content)
 
 func delete_cell_content(col, line, content):
-	if grid_map.has(col) and grid_map[col].has(line):
-		var index = grid_map[col][line].find(content)
-		if index != -1:
-			grid_map[col][line].remove(index)
-			return true
+	var index = get_cell_content(col, line).find(content)
+	if index != -1:
+		grid_map[col][line].remove(index)
+		return true
 	return false
+
+func move_cell_content(content, to, from = null):
+	if from != null:
+		var items = get_cell_content(from.x, from.y)
+		if content in items:
+			delete_cell_content(from.x, from.y, content)
+	register_cell_content(to.x, to.y, content)
 
 func get_cell_content(col, line):
 	if grid_map.has(col) and grid_map[col].has(line):

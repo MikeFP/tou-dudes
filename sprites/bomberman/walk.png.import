@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/walk.png-a55dd6466c569c876dd24ba1b050ee72.stex"
+path="res://.import/walk.png-16ddbae3ea1a1915f32cf475ed2567cc.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/walk.png"
-dest_files=[ "res://.import/walk.png-a55dd6466c569c876dd24ba1b050ee72.stex" ]
+source_file="res://sprites/bomberman/walk.png"
+dest_files=[ "res://.import/walk.png-16ddbae3ea1a1915f32cf475ed2567cc.stex" ]
 
 [params]
 

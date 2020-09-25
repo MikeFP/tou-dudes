@@ -109,6 +109,7 @@ borderShaderMaterial = ExtResource( 8 )
 glowColor = Color( 0.447059, 0.298039, 0.109804, 1 )
 
 [node name="tester" type="Node2D" parent="."]
+scale = Vector2( 1, 0.996921 )
 script = ExtResource( 7 )
 
 [node name="TileMap" type="TileMap" parent="."]

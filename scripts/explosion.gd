@@ -15,7 +15,6 @@ func _physics_process(_delta):
 func _on_animation_finished(_anim_name: String):
 	hide()
 	$Area2D/CollisionShape2D.set_deferred("disabled", true)
-	bomb.queue_free()
 	queue_free()
 
 func _on_body_entered(body: PhysicsBody2D):	

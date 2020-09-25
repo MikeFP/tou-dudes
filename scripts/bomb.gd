@@ -1,10 +1,6 @@
 extends KinematicBody2D
 var explosion_scene = preload("res://scenes/explosion.tscn")
 
-var timer: Timer
-var area2d
-var collider
-var anim
 var controller
 
 var activateCollision = false
@@ -20,21 +16,20 @@ export var throw_duration = 0.25
 var move_direction = Vector2()
 
 onready var tween: Tween = $Tween
+onready var anim := $"Sprite/AnimationPlayer"
+onready var timer := $Timer
+onready var area2d := $Area2D
+onready var collider := $CollisionShape2D
 
 func _ready():
-
-	anim = get_node("Sprite/AnimationPlayer")
 	anim.play("Charging")
 	
-	timer = $Timer
 	timer.connect("timeout", self, "explode")
 	
-	area2d = $Area2D
 	area2d.connect("body_entered", self, "_on_body_enter")
 	area2d.connect("body_exited", self, "_on_body_exit")
 	
-	collider = get_node("CollisionShape2D")
-	_disable_collision()
+	disable_collision()
 	
 	$Sprite.visible = false
 	activateCollision = false
@@ -43,7 +38,7 @@ func _ready():
 func _process(_delta):
 	if collider.disabled and activateCollision:
 		activateCollision = false
-		_enable_collision()
+		enable_collision()
 
 func _physics_process(delta):
 	if move_direction != Vector2():
@@ -71,10 +66,10 @@ func _on_body_exit(body: PhysicsBody2D):
 		if body.is_in_group("players"):
 			body.isOverBomb = false
 
-func _enable_collision():
+func enable_collision():
 	collider.set_deferred("disabled", false)
 
-func _disable_collision():
+func disable_collision():
 	collider.set_deferred("disabled", true)
 
 func spawn(pos: Vector2):
@@ -87,7 +82,7 @@ func spawn(pos: Vector2):
 
 func explode():
 	if not exploded:
-		_disable_collision()
+		disable_collision()
 		exploded = true
 		
 		anim.stop()
@@ -95,7 +90,11 @@ func explode():
 		
 		_instance_explosion_sprites()
 		hide()
+
+		controller.delete_cell_content(gridPosition.x, gridPosition.y, self)
 		player.bombCount -= 1
+
+		queue_free()
 	
 
 func _instance_explosion_sprites():	
@@ -175,7 +174,7 @@ func stop_slide():
 	snap_to_grid()
 
 func throw(target: Vector2):
-	_disable_collision()
+	disable_collision()
 	suspend_timer()
 
 	var max_y = position.y - controller.CELL_WIDTH * 1
@@ -191,7 +190,7 @@ func throw(target: Vector2):
 	yield(tween, "tween_all_completed")
 
 	resume_timer()
-	_enable_collision()
+	enable_collision()
 
 	position = target
 	snap_to_grid()
@@ -201,7 +200,10 @@ func snap_to_grid():
 	position = controller.map_to_world(gridPosition) + Vector2(8, 8)
 
 func update_grid_position():
+	var oldPos = gridPosition
 	gridPosition = controller.world_to_map(position)
+	if oldPos != gridPosition:
+		controller.move_cell_content(self, gridPosition, oldPos)
 
 func suspend_timer():
 	timer.paused = true

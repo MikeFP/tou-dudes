@@ -38,5 +38,11 @@ func is_action_just_pressed(action: String, player: Node2D):
 func is_action_pressed(action: String, player: Node2D):
 	return Input.is_action_pressed(action + "_p" + str(player.id + 1))
 
+func is_action_just_released(action: String, player: Node2D):
+	return Input.is_action_just_released(action + "_p" + str(player.id + 1))
+
 func is_event_action_pressed(event: InputEvent, action: String, player: Node2D):
 	return event.is_action_pressed(action + "_p" + str(player.id + 1))
+
+func is_event_action_released(event: InputEvent, action: String, player: Node2D):
+	return event.is_action_released(action + "_p" + str(player.id + 1))

@@ -3,34 +3,49 @@ var bomb_scene = preload("res://scenes/bomb.tscn")
 
 enum Gaze { RIGHT, LEFT, DOWN, UP }
 
-var speed = 48
 var id
-var gaze = Gaze.DOWN
-var stance = "Idle"
-var isIdle = true
+
+var speed = 48
 var intensity = 2
-var anim
-var alive = true
 var maxBombs = 1
 var bombCount = 0
+var gaze = Gaze.DOWN
+var stance = "Idle"
+
+var alive = true
+var isIdle = true
 var isOverBomb = false
+var is_animating = false
+var holdingBomb = false
+
+var gridPosition = Vector2()
 var lastXInput = Vector2()
 var lastYInput = Vector2()
 var lastVelocity = Vector2()
+var liftingBomb
 
-var is_animating = false
-
+onready var anim = $"Sprite/AnimationPlayer"
 onready var controller = get_parent()
 onready var punch_area = $"Punch Hitbox"
 
+signal planted_bomb
+signal grid_position_changed
+signal animation_started
+signal animation_finished
+
 func _ready():
-	anim = get_node("Sprite/AnimationPlayer")
+	anim.connect("animation_started", self, "_on_animation_started")
 	anim.connect("animation_finished", self, "_on_animation_finished")
 
 func _process(_delta):
 	z_index = int(position.y)
+
 	if InputHandler.is_action_pressed("main_action_1", self):
 		try_spawn_bomb()
+
+	if holdingBomb:
+		liftingBomb.position = position + Vector2(0, -16)
+		liftingBomb.z_index = z_index + 10
 
 func _physics_process(_delta):
 	if !is_animating:
@@ -87,9 +102,13 @@ func _physics_process(_delta):
 			position.x = round(position.x)
 			position.y = round(position.y)
 		
-		stance = "Idle";
+		stance = "Idle"
 		if !isIdle:
-			stance = "Walk";
+			stance = "Walk"
+			if holdingBomb:
+				stance = "Walking Holding"
+		elif holdingBomb:
+			stance = "Holding"
 
 		anim.play(stance + get_animation_complement())
 
@@ -97,18 +116,18 @@ func _physics_process(_delta):
 		lastYInput = yInput
 		lastVelocity = newV
 
+	update_grid_position()
+
 func try_spawn_bomb():
-	if bombCount < maxBombs:
-		var gridPosition = controller.world_to_map(position)
-		
+	if !isOverBomb && !holdingBomb && bombCount < maxBombs:		
 		var canSpawn = true
-		var bombs = get_parent().get_tree().get_nodes_in_group("bombs")
-		for b in bombs:
-			if b.gridPosition == gridPosition:
+		var content = controller.get_cell_content(gridPosition.x, gridPosition.y)
+		for item in controller.get_cell_content(gridPosition.x, gridPosition.y):
+			if item != null && typeof(item) != TYPE_INT && item.is_in_group("bombs"):
 				canSpawn = false
 				break
 		
-		if canSpawn and not isOverBomb:
+		if canSpawn:
 			var bomb = bomb_scene.instance()
 			bomb.player = self
 			bomb.intensity = intensity
@@ -117,6 +136,14 @@ func try_spawn_bomb():
 
 			bomb.spawn(position)
 			bombCount += 1
+
+			emit_signal("planted_bomb", bomb)
+
+func update_grid_position():
+	var old_pos = gridPosition
+	gridPosition = controller.world_to_map(position)
+	if gridPosition != old_pos:
+		emit_signal("grid_position_changed", gridPosition)
 
 func die():
 	if alive:
@@ -154,7 +181,7 @@ func get_gaze_vector():
 			return Vector2.UP
 			
 func punch():
-	if !is_animating:
+	if !is_animating && !holdingBomb:
 		is_animating = true
 		anim.play("Punch" + get_animation_complement())
 
@@ -165,9 +192,37 @@ func _on_punch_hit(body):
 	if body.is_in_group("bombs"):
 		body.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 4)
 
+func _on_animation_started(anim_name):
+	emit_signal("animation_started", anim_name)
+
 func _on_animation_finished(anim_name):
 	if is_animating:
 		is_animating = false
 
-	if anim_name.match("Punch*"):
+	if anim_name.find("Punch") != -1:
 		punch_area.disconnect("body_entered", self, "_on_punch_hit")
+	
+	emit_signal("animation_finished", anim_name)
+
+func lift(bomb):
+	if !is_animating:
+		is_animating = true
+		anim.play("Lifting" + get_animation_complement())
+		liftingBomb = bomb
+		controller.delete_cell_content(bomb.gridPosition.x, bomb.gridPosition.y, bomb)
+
+func _start_holding():
+	holdingBomb = true
+	liftingBomb.suspend_timer()
+	liftingBomb.disable_collision()
+
+func throw():
+	if liftingBomb != null:
+		# is_animating = true
+		# anim.play("Lifting" + get_animation_complement())
+		liftingBomb.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 3)
+		_stop_holding()
+
+func _stop_holding():
+	holdingBomb = false
+	liftingBomb = null
