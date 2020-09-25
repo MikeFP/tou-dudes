@@ -36,9 +36,14 @@ func _player_moved_away(_pos):
 
 func _cancel_hold():
 	if bomb != null:
-		bomb = null
 		valid_input = false
-		player.liftingBomb = null
+		bomb = null
+		player.stop_holding()
+
+func throw():
+	player.throw()
+	bomb.disconnect("exploded", self, "_cancel_hold")
+	bomb = null
 
 func _unhandled_key_input(event):
 	if bomb != null:
@@ -46,10 +51,8 @@ func _unhandled_key_input(event):
 			player.lift(bomb)
 			valid_input = false
 		elif player.holdingBomb && InputHandler.is_event_action_released(event, "main_action_1", player):
-			player.throw()
-			bomb = null
+			throw()
 
 func _process(_delta):
 	if bomb != null && player.holdingBomb && !InputHandler.is_action_pressed("main_action_1", player):
-		player.throw()
-		bomb = null
+		throw()

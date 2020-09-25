@@ -145,28 +145,36 @@ func _powerup_gone(powerup, col, line):
 		delete_cell_content(col, line, powerup)
 
 func register_cell_content(col, line, content):
-	if !grid_map.has(col):
-		grid_map[col] = {}
-	if !grid_map[col].has(line):
-		grid_map[col][line] = []
-	if !(content in grid_map[col][line]):
-		grid_map[col][line].append(content)
+	var c = int(col)
+	var l = int(line)
+	if !grid_map.has(c):
+		grid_map[c] = {}
+	if !grid_map[c].has(l):
+		grid_map[c][l] = []
+	if !(content in grid_map[c][l]):
+		grid_map[c][l].append(content)
+
 
 func delete_cell_content(col, line, content):
-	var index = get_cell_content(col, line).find(content)
+	var c = int(col)
+	var l = int(line)
+	var index = get_cell_content(Vector2(c, l)).find(content)
 	if index != -1:
-		grid_map[col][line].remove(index)
+		grid_map[c][l].remove(index)
 		return true
 	return false
 
 func move_cell_content(content, to, from = null):
 	if from != null:
-		var items = get_cell_content(from.x, from.y)
+		var items = get_cell_content(from)
 		if content in items:
 			delete_cell_content(from.x, from.y, content)
 	register_cell_content(to.x, to.y, content)
 
-func get_cell_content(col, line):
+func get_cell_content(grid_position):
+	var col = int(grid_position.x)
+	var line = int(grid_position.y)
+
 	if grid_map.has(col) and grid_map[col].has(line):
 		return grid_map[col][line]
 

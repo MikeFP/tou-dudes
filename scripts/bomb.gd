@@ -90,10 +90,10 @@ func explode():
 		anim.stop()
 		timer.stop()
 		
-		_instance_explosion_sprites()
-		hide()
-
 		controller.delete_cell_content(gridPosition.x, gridPosition.y, self)
+		hide()
+		_instance_explosion_sprites()
+
 		player.bombCount -= 1
 
 		emit_signal("exploded")
@@ -147,16 +147,19 @@ func _instance_explosion_sprites():
 		absPos = gridPosition + relPos
 		var finalPos = controller.map_to_world(absPos) + Vector2(8, 8)
 		
-		var content = controller.get_cell_content(int(absPos.x), int(absPos.y))
+		var content = controller.get_cell_content(absPos)
+		var is_obstacle = false
+		for c in content:
+			if typeof(c) == TYPE_INT:
+				is_obstacle = true
+			elif !c.is_in_group("bombs") && c.has_method("destroy"):
+				is_obstacle = true
+				c.destroy()
+				break
 		
-		if len(content) > 0:
-			var what = content[-1]
-			if typeof(what) != TYPE_INT && what.has_method("destroy"):
-				what.destroy()
-				
-			if isBody:
-				i += 1
-				dist = 1
+		if is_obstacle && isBody:
+			i += 1
+			dist = 1
 
 		else:
 			var explosion = explosion_scene.instance()
@@ -176,27 +179,43 @@ func stop_slide():
 	move_direction = Vector2()
 	snap_to_grid()
 
-func throw(target: Vector2):
+func throw(target: Vector2, duration := throw_duration, height := 1.0, upwards_motion = true):
+	var original_pos = position
+
 	disable_collision()
 	suspend_timer()
-
-	var max_y = position.y - controller.CELL_WIDTH * 1
-
+	
 	tween.interpolate_property(self, "position:x",
-		position.x, target.x, throw_duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
-	tween.interpolate_property(self, "position:y",
-		position.y, max_y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_OUT)
-	tween.interpolate_property(self, "position:y",
-		max_y, target.y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_IN, throw_duration/2)
+		position.x, target.x, duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
+	
+	if upwards_motion:
+		var max_y = position.y - controller.CELL_WIDTH * height
+		tween.interpolate_property(self, "position:y",
+			position.y, max_y, duration/2, Tween.TRANS_QUAD, Tween.EASE_OUT)
+		tween.interpolate_property(self, "position:y",
+			max_y, target.y, duration/2, Tween.TRANS_QUAD, Tween.EASE_IN, duration/2)
+			
+	else:
+		tween.interpolate_property(self, "position:y",
+		position.y, target.y, duration, Tween.TRANS_QUAD, Tween.EASE_IN)
+			
 	tween.start()
-
 	yield(tween, "tween_all_completed")
-
-	resume_timer()
-	enable_collision()
 
 	position = target
 	snap_to_grid()
+
+	var content = controller.get_cell_content(gridPosition)
+	for i in content:
+		if typeof(i) == TYPE_INT || (i.is_in_group("bombs") && i != self):
+			bounce((target - original_pos).normalized().snapped(Vector2(1, 1)))
+			return
+	
+	resume_timer()
+	enable_collision()
+
+func bounce(direction: Vector2):
+	throw(position + direction.normalized() * controller.CELL_WIDTH, 0.15, 0.5)
 
 func snap_to_grid():
 	update_grid_position()

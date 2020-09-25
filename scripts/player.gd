@@ -43,9 +43,7 @@ func _process(_delta):
 	if InputHandler.is_action_pressed("main_action_1", self):
 		try_spawn_bomb()
 
-	if holdingBomb:
-		liftingBomb.position = position + Vector2(0, -16)
-		liftingBomb.z_index = z_index + 10
+	_update_holding_item_position()
 
 func _physics_process(_delta):
 	if !is_animating:
@@ -121,8 +119,8 @@ func _physics_process(_delta):
 func try_spawn_bomb():
 	if !isOverBomb && !holdingBomb && bombCount < maxBombs:		
 		var canSpawn = true
-		var content = controller.get_cell_content(gridPosition.x, gridPosition.y)
-		for item in controller.get_cell_content(gridPosition.x, gridPosition.y):
+		var content = controller.get_cell_content(gridPosition)
+		for item in content:
 			if item != null && typeof(item) != TYPE_INT && item.is_in_group("bombs"):
 				canSpawn = false
 				break
@@ -190,7 +188,7 @@ func _check_punch_hit():
 
 func _on_punch_hit(body):
 	if body.is_in_group("bombs"):
-		body.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 4)
+		body.throw(body.position + get_gaze_vector() * controller.CELL_WIDTH * 3)
 
 func _on_animation_started(anim_name):
 	emit_signal("animation_started", anim_name)
@@ -216,14 +214,25 @@ func _start_holding():
 		holdingBomb = true
 		liftingBomb.suspend_timer()
 		liftingBomb.disable_collision()
+		_update_holding_item_position()
+
+func _update_holding_item_position():
+	if holdingBomb:
+		liftingBomb.position = position + Vector2(0, -16)
+		liftingBomb.z_index = z_index + 10
 
 func throw():
 	if liftingBomb != null:
 		# is_animating = true
 		# anim.play("Lifting" + get_animation_complement())
-		liftingBomb.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 3)
-		_stop_holding()
+		liftingBomb.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 3, liftingBomb.throw_duration, 1.0, false)
+		liftingBomb = null
+		stop_holding()
 
-func _stop_holding():
+func stop_holding():
 	holdingBomb = false
-	liftingBomb = null
+
+	if liftingBomb != null:
+		liftingBomb = null
+		liftingBomb.resume_timer()
+		liftingBomb.enable_collision()
