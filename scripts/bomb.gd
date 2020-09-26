@@ -7,8 +7,10 @@ var activateCollision = false
 var intensity = 2
 var gridPosition = Vector2()
 var has_exploded = false
+var is_above_ground = false
 var player
-var carrier
+
+var players_in_area = []
 
 export var slide_speed = 64.0
 export var delay = 2.25
@@ -58,15 +60,18 @@ func _physics_process(delta):
 		update_grid_position()
 
 func _on_body_enter(body: PhysicsBody2D):
-	if move_direction == Vector2() && body != null and body.is_in_group("players"):
-		body.add_collision_exception_with(self)
-		body.isOverBomb = true
+	if body != null and body.is_in_group("players") && move_direction == Vector2():
+		if !is_above_ground:
+			body.add_collision_exception_with(self)
+			body.isOverBomb = true
+		players_in_area.append(body)
 
 func _on_body_exit(body: PhysicsBody2D):
 	if body != null:
 		body.remove_collision_exception_with(self)
 		if body.is_in_group("players"):
 			body.isOverBomb = false
+			players_in_area.remove(players_in_area.find(body))
 
 func enable_collision():
 	collider.set_deferred("disabled", false)
@@ -184,6 +189,7 @@ func throw(target: Vector2, duration := throw_duration, height := 1.0, upwards_m
 
 	disable_collision()
 	suspend_timer()
+	is_above_ground = true
 	
 	tween.interpolate_property(self, "position:x",
 		position.x, target.x, duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
@@ -211,6 +217,12 @@ func throw(target: Vector2, duration := throw_duration, height := 1.0, upwards_m
 			bounce((target - original_pos).normalized().snapped(Vector2(1, 1)))
 			return
 	
+	for p in players_in_area:
+		p.add_collision_exception_with(self)
+		p.isOverBomb = true
+		p.stun()
+	
+	is_above_ground = false
 	resume_timer()
 	enable_collision()
 

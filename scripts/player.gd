@@ -231,8 +231,9 @@ func throw():
 
 func stop_holding():
 	holdingBomb = false
+	throw()
 
-	if liftingBomb != null:
-		liftingBomb = null
-		liftingBomb.resume_timer()
-		liftingBomb.enable_collision()
+func stun():
+	stop_holding()
+	is_animating = true
+	anim.play("Stun")
