@@ -22,6 +22,7 @@ func _player_planted_bomb(new_bomb):
 
 func _check_animation(anim):
 	if !player.holdingBomb && player.is_animating && anim.find("Lifting") == -1:
+		print("called from anim")
 		_cancel_hold()
 
 func _check_timer():
@@ -37,6 +38,7 @@ func _player_moved_away(_pos):
 func _cancel_hold():
 	if bomb != null:
 		valid_input = false
+		bomb.disconnect("exploded", self, "_cancel_hold")
 		bomb = null
 		player.stop_holding()
 

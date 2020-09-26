@@ -7,15 +7,18 @@ var activateCollision = false
 var intensity = 2
 var gridPosition = Vector2()
 var has_exploded = false
-var is_above_ground = false
 var player
 
 var players_in_area = []
 
 export var slide_speed = 64.0
 export var delay = 2.25
-export var throw_duration = 0.25
 var move_direction = Vector2()
+
+var throw_distance = Vector2()
+var original_position = Vector2()
+var throw_duration
+var throw_height
 
 onready var tween: Tween = $Tween
 onready var anim := $"Sprite/AnimationPlayer"
@@ -58,10 +61,16 @@ func _physics_process(delta):
 			stop_slide()
 
 		update_grid_position()
+	
+	if throw_distance != Vector2():
+		if controller.is_out_of_bounds(controller.world_to_map(position)) != Vector2():
+			var warp_dir = controller.is_out_of_bounds(controller.world_to_map(throw_distance + original_position))
+			if warp_dir != Vector2():
+				warp_throw(original_position + warp_dir * (controller.world_columns + 1) * controller.CELL_WIDTH)
 
 func _on_body_enter(body: PhysicsBody2D):
 	if body != null and body.is_in_group("players") && move_direction == Vector2():
-		if !is_above_ground:
+		if throw_distance == Vector2():
 			body.add_collision_exception_with(self)
 			body.isOverBomb = true
 		players_in_area.append(body)
@@ -184,37 +193,30 @@ func stop_slide():
 	move_direction = Vector2()
 	snap_to_grid()
 
-func throw(target: Vector2, duration := throw_duration, height := 1.0, upwards_motion = true):
-	var original_pos = position
-
+func throw(target: Vector2, duration := 0.25, height := 1.0, upwards_motion = true):
+	
 	disable_collision()
 	suspend_timer()
-	is_above_ground = true
 	
-	tween.interpolate_property(self, "position:x",
-		position.x, target.x, duration,Tween.TRANS_LINEAR, Tween.EASE_IN)
-	
+	original_position = position
+	throw_distance = target - position
+	throw_duration = duration
+	throw_height = null
 	if upwards_motion:
-		var max_y = position.y - controller.CELL_WIDTH * height
-		tween.interpolate_property(self, "position:y",
-			position.y, max_y, duration/2, Tween.TRANS_QUAD, Tween.EASE_OUT)
-		tween.interpolate_property(self, "position:y",
-			max_y, target.y, duration/2, Tween.TRANS_QUAD, Tween.EASE_IN, duration/2)
-			
-	else:
-		tween.interpolate_property(self, "position:y",
-		position.y, target.y, duration, Tween.TRANS_QUAD, Tween.EASE_IN)
+		throw_height = height
+	
+	_setup_throw_animation()
 			
 	tween.start()
 	yield(tween, "tween_all_completed")
 
-	position = target
+	position = original_position + throw_distance
 	snap_to_grid()
 
 	var content = controller.get_cell_content(gridPosition)
 	for i in content:
 		if typeof(i) == TYPE_INT || (i.is_in_group("bombs") && i != self):
-			bounce((target - original_pos).normalized().snapped(Vector2(1, 1)))
+			bounce((throw_distance).normalized().snapped(Vector2(1, 1)))
 			return
 	
 	for p in players_in_area:
@@ -222,13 +224,34 @@ func throw(target: Vector2, duration := throw_duration, height := 1.0, upwards_m
 		p.isOverBomb = true
 		p.stun()
 	
-	is_above_ground = false
+	throw_distance = Vector2()
 	resume_timer()
 	enable_collision()
+
+func _setup_throw_animation():
+	var target = original_position + throw_distance
+
+	tween.interpolate_property(self, "position:x",
+		original_position.x, target.x, throw_duration, Tween.TRANS_LINEAR, Tween.EASE_IN)
+	
+	if throw_height != null:
+		var max_y = original_position.y - controller.CELL_WIDTH * throw_height
+		tween.interpolate_property(self, "position:y",
+			original_position.y, max_y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_OUT)
+		tween.interpolate_property(self, "position:y",
+			max_y, target.y, throw_duration/2, Tween.TRANS_QUAD, Tween.EASE_IN, throw_duration/2)
+			
+	else:
+		tween.interpolate_property(self, "position:y",
+			original_position.y, target.y, throw_duration, Tween.TRANS_QUAD, Tween.EASE_IN)
 
 func bounce(direction: Vector2):
 	throw(position + direction.normalized() * controller.CELL_WIDTH, 0.15, 0.5)
 
+func warp_throw(new_origin: Vector2):
+	original_position = new_origin
+	_setup_throw_animation()
+	
 func snap_to_grid():
 	update_grid_position()
 	position = controller.map_to_world(gridPosition) + Vector2(8, 8)

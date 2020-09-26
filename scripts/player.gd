@@ -225,7 +225,7 @@ func throw():
 	if liftingBomb != null:
 		# is_animating = true
 		# anim.play("Lifting" + get_animation_complement())
-		liftingBomb.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 3, liftingBomb.throw_duration, 1.0, false)
+		liftingBomb.throw(position + get_gaze_vector() * controller.CELL_WIDTH * 3, 0.25, 1.0, false)
 		liftingBomb = null
 		stop_holding()
 

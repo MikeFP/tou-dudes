@@ -147,13 +147,29 @@ func _powerup_gone(powerup, col, line):
 func register_cell_content(col, line, content):
 	var c = int(col)
 	var l = int(line)
+
+	var new = false
 	if !grid_map.has(c):
 		grid_map[c] = {}
+		new = true
 	if !grid_map[c].has(l):
 		grid_map[c][l] = []
+		new = true
+	
+	if new:
+		_check_tilemap_for_content(c, l)
+
 	if !(content in grid_map[c][l]):
 		grid_map[c][l].append(content)
 
+func _check_tilemap_for_content(col, line):
+	var tile = tileMap.get_cell(col, line)
+	if tile != -1 and tile != cellTypeIds[TileType.GROUND]:
+		for type in cellTypeIds:
+			if cellTypeIds[type] == tile:
+				register_cell_content(col, line, type)
+				return [type]
+	return []
 
 func delete_cell_content(col, line, content):
 	var c = int(col)
@@ -178,16 +194,29 @@ func get_cell_content(grid_position):
 	if grid_map.has(col) and grid_map[col].has(line):
 		return grid_map[col][line]
 
-	var tile = tileMap.get_cell(col, line)
-	if tile != -1 and tile != cellTypeIds[TileType.GROUND]:
-		for type in cellTypeIds:
-			if cellTypeIds[type] == tile:
-				register_cell_content(col, line, type)
-				return [type]
-	return []
+	return _check_tilemap_for_content(col, line)
 
 func map_to_world(map_pos):
 	return tileMap.map_to_world(map_pos) + tileMap.position
 
 func world_to_map(world_pos):
 	return tileMap.world_to_map(world_pos - tileMap.position)
+
+func is_out_of_bounds(grid_position: Vector2):
+	var c = int(grid_position.x)
+	var l = int(grid_position.y)
+
+	var col_offset = 0
+	var line_offset = 0
+
+	if c < 0:
+		col_offset = 1
+	if c > world_columns:
+		col_offset = -1
+	if l < 0:
+		line_offset = 1
+	if l > world_columns:
+		line_offset = -1
+
+	var res = Vector2() + Vector2.RIGHT * col_offset + Vector2.DOWN * line_offset
+	return res
