@@ -195,11 +195,13 @@ func stop_slide():
 
 func throw(target: Vector2, duration := 0.25, height := 1.0, upwards_motion = true):
 	
+	var real_target = controller.map_to_world(controller.world_to_map(target)) + Vector2(8,8)
+
 	disable_collision()
 	suspend_timer()
 	
 	original_position = position
-	throw_distance = target - position
+	throw_distance = real_target - position
 	throw_duration = duration
 	throw_height = null
 	if upwards_motion:

@@ -16,7 +16,7 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.0
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id=28]
 resource_name = "Holding"
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
@@ -67,7 +67,7 @@ tracks/3/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=29]
 resource_name = "Holding Back"
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
@@ -118,7 +118,7 @@ tracks/3/keys = {
 "values": [ 12 ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=30]
 resource_name = "Holding Left"
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
@@ -181,7 +181,7 @@ tracks/4/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=31]
 resource_name = "Holding Right"
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
@@ -244,7 +244,7 @@ tracks/4/keys = {
 "values": [ false ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=32]
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:frame")
 tracks/0/interp = 1
@@ -318,7 +318,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=33]
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
 tracks/0/interp = 1
@@ -392,7 +392,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=34]
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
 tracks/0/interp = 1
@@ -466,7 +466,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=35]
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:frame")
 tracks/0/interp = 1
@@ -540,7 +540,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=36]
 resource_name = "Lifting"
 length = 0.25
 tracks/0/type = "value"
@@ -606,7 +606,7 @@ tracks/4/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=37]
 resource_name = "Lifting Back"
 length = 0.25
 tracks/0/type = "value"
@@ -672,7 +672,7 @@ tracks/4/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=38]
 resource_name = "Lifting Left"
 length = 0.25
 tracks/0/type = "value"
@@ -750,7 +750,7 @@ tracks/5/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=13]
+[sub_resource type="Animation" id=39]
 resource_name = "Lifting Right"
 length = 0.25
 tracks/0/type = "value"
@@ -828,7 +828,7 @@ tracks/5/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=40]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
@@ -901,32 +901,6 @@ tracks/5/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ false ]
-}
-tracks/6/type = "value"
-tracks/6/path = NodePath("../Punch Hitbox:position")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ Vector2( 0, 0 ), Vector2( 0, 10 ) ]
-}
-tracks/7/type = "method"
-tracks/7/path = NodePath("..")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/keys = {
-"times": PoolRealArray( 0.2 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "_check_punch_hit"
-} ]
 }
 
 [sub_resource type="Animation" id=15]
@@ -1003,32 +977,6 @@ tracks/5/keys = {
 "update": 1,
 "values": [ false ]
 }
-tracks/6/type = "value"
-tracks/6/path = NodePath("../Punch Hitbox:position")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ Vector2( 0, 0 ), Vector2( 0, -10 ) ]
-}
-tracks/7/type = "method"
-tracks/7/path = NodePath("..")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/keys = {
-"times": PoolRealArray( 0.2 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "_check_punch_hit"
-} ]
-}
 
 [sub_resource type="Animation" id=16]
 length = 0.5
@@ -1103,32 +1051,6 @@ tracks/5/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 0,
 "values": [ Vector2( -12, -16 ) ]
-}
-tracks/6/type = "value"
-tracks/6/path = NodePath("../Punch Hitbox:position")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ Vector2( 0, 0 ), Vector2( -10, 0 ) ]
-}
-tracks/7/type = "method"
-tracks/7/path = NodePath("..")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/keys = {
-"times": PoolRealArray( 0.2 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "_check_punch_hit"
-} ]
 }
 
 [sub_resource type="Animation" id=17]
@@ -1205,32 +1127,6 @@ tracks/5/keys = {
 "update": 0,
 "values": [ Vector2( -8, -16 ) ]
 }
-tracks/6/type = "value"
-tracks/6/path = NodePath("../Punch Hitbox:position")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ Vector2( 0, 0 ), Vector2( 10, 0 ) ]
-}
-tracks/7/type = "method"
-tracks/7/path = NodePath("..")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/keys = {
-"times": PoolRealArray( 0.2 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "_check_punch_hit"
-} ]
-}
 
 [sub_resource type="Animation" id=18]
 resource_name = "Stun"
@@ -1284,7 +1180,7 @@ tracks/3/keys = {
 "values": [ 2, 3, 4, 3, 2, 1, 0, 1, 2 ]
 }
 
-[sub_resource type="Animation" id=19]
+[sub_resource type="Animation" id=41]
 length = 1.2
 loop = true
 tracks/0/type = "value"
@@ -1360,7 +1256,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=20]
+[sub_resource type="Animation" id=42]
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:texture")
@@ -1435,7 +1331,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=21]
+[sub_resource type="Animation" id=43]
 length = 1.2
 loop = true
 tracks/0/type = "value"
@@ -1511,7 +1407,7 @@ tracks/5/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=22]
+[sub_resource type="Animation" id=44]
 length = 1.2
 loop = true
 tracks/0/type = "value"
@@ -1820,7 +1716,7 @@ tracks/4/keys = {
 }
 
 [sub_resource type="RectangleShape2D" id=27]
-extents = Vector2( 4, 4 )
+extents = Vector2( 2, 2 )
 
 [node name="player" type="KinematicBody2D" groups=[
 "players",
@@ -1834,40 +1730,39 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 z_index = 10
-texture = ExtResource( 12 )
+texture = ExtResource( 2 )
 centered = false
 offset = Vector2( -8, -16 )
-hframes = 5
-frame = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
-anims/Holding = SubResource( 2 )
-"anims/Holding Back" = SubResource( 3 )
-"anims/Holding Left" = SubResource( 4 )
-"anims/Holding Right" = SubResource( 5 )
-anims/Idle = SubResource( 6 )
-"anims/Idle Back" = SubResource( 7 )
-"anims/Idle Left" = SubResource( 8 )
-"anims/Idle Right" = SubResource( 9 )
-anims/Lifting = SubResource( 10 )
-"anims/Lifting Back" = SubResource( 11 )
-"anims/Lifting Left" = SubResource( 12 )
-"anims/Lifting Right" = SubResource( 13 )
-anims/Punch = SubResource( 14 )
+anims/Holding = SubResource( 28 )
+"anims/Holding Back" = SubResource( 29 )
+"anims/Holding Left" = SubResource( 30 )
+"anims/Holding Right" = SubResource( 31 )
+anims/Idle = SubResource( 32 )
+"anims/Idle Back" = SubResource( 33 )
+"anims/Idle Left" = SubResource( 34 )
+"anims/Idle Right" = SubResource( 35 )
+anims/Lifting = SubResource( 36 )
+"anims/Lifting Back" = SubResource( 37 )
+"anims/Lifting Left" = SubResource( 38 )
+"anims/Lifting Right" = SubResource( 39 )
+anims/Punch = SubResource( 40 )
 "anims/Punch Back" = SubResource( 15 )
 "anims/Punch Left" = SubResource( 16 )
 "anims/Punch Right" = SubResource( 17 )
 anims/Stun = SubResource( 18 )
-anims/Walk = SubResource( 19 )
-"anims/Walk Back" = SubResource( 20 )
-"anims/Walk Left" = SubResource( 21 )
-"anims/Walk Right" = SubResource( 22 )
+anims/Walk = SubResource( 41 )
+"anims/Walk Back" = SubResource( 42 )
+"anims/Walk Left" = SubResource( 43 )
+"anims/Walk Right" = SubResource( 44 )
 "anims/Walking Holding" = SubResource( 23 )
 "anims/Walking Holding Back" = SubResource( 24 )
 "anims/Walking Holding Left" = SubResource( 25 )
 "anims/Walking Holding Right" = SubResource( 26 )
 
 [node name="Punch Hitbox" type="Area2D" parent="."]
+position = Vector2( 0, 12 )
 collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Punch Hitbox"]

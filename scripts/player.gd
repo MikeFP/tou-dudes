@@ -24,6 +24,8 @@ var lastYInput = Vector2()
 var lastVelocity = Vector2()
 var liftingBomb
 
+var bombsInPunchArea = []
+
 onready var anim = $"Sprite/AnimationPlayer"
 onready var controller = get_parent()
 onready var punch_area = $"Punch Hitbox"
@@ -114,6 +116,8 @@ func _physics_process(_delta):
 		lastYInput = yInput
 		lastVelocity = newV
 
+		_update_punch_hitbox_position()
+
 	update_grid_position()
 
 func try_spawn_bomb():
@@ -129,8 +133,8 @@ func try_spawn_bomb():
 			var bomb = bomb_scene.instance()
 			bomb.player = self
 			bomb.intensity = intensity
-			bomb.controller = get_parent()
-			get_parent().add_child(bomb)
+			bomb.controller = controller
+			controller.add_child(bomb)
 
 			bomb.spawn(position)
 			bombCount += 1
@@ -183,12 +187,8 @@ func punch():
 		is_animating = true
 		anim.play("Punch" + get_animation_complement())
 
-func _check_punch_hit():
-	punch_area.connect("body_entered", self, "_on_punch_hit")
-
-func _on_punch_hit(body):
-	if body.is_in_group("bombs"):
-		body.throw(body.position + get_gaze_vector() * controller.CELL_WIDTH * 3)
+func _update_punch_hitbox_position():
+	punch_area.position = get_gaze_vector() * 12
 
 func _on_animation_started(anim_name):
 	emit_signal("animation_started", anim_name)
@@ -196,9 +196,6 @@ func _on_animation_started(anim_name):
 func _on_animation_finished(anim_name):
 	if is_animating:
 		is_animating = false
-
-	if anim_name.find("Punch") != -1:
-		punch_area.disconnect("body_entered", self, "_on_punch_hit")
 	
 	emit_signal("animation_finished", anim_name)
 
