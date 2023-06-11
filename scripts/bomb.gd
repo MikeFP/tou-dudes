@@ -78,7 +78,7 @@ func _on_body_enter(body: PhysicsBody2D):
 func _on_body_exit(body: PhysicsBody2D):
 	if body != null:
 		body.remove_collision_exception_with(self)
-		if body.is_in_group("players"):
+		if body.is_in_group("players") && (body in players_in_area):
 			body.isOverBomb = false
 			players_in_area.remove(players_in_area.find(body))
 
