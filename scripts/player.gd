@@ -166,7 +166,7 @@ func increase_max_bombs():
 func increase_intensity(quantity = 1):
 	intensity += quantity
 
-func increase_speed(units_per_second = 8):
+func increase_speed(units_per_second = 12):
 	speed += units_per_second
 
 func get_animation_complement():

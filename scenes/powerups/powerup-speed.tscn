@@ -7,9 +7,7 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 7, 7 )
 
-[node name="powerup-speed" type="Sprite" groups=[
-"powerups",
-]]
+[node name="powerup-speed" type="Sprite" groups=["powerups"]]
 material = ExtResource( 1 )
 texture = ExtResource( 3 )
 centered = false
