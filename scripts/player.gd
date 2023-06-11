@@ -40,6 +40,9 @@ func _ready():
 	anim.connect("animation_finished", self, "_on_animation_finished")
 
 func _process(_delta):
+	if !alive:
+		return
+
 	z_index = int(position.y)
 
 	if InputHandler.is_action_pressed("main_action_1", self):
@@ -48,6 +51,9 @@ func _process(_delta):
 	_update_holding_item_position()
 
 func _physics_process(_delta):
+	if !alive:
+		return
+
 	if !is_animating:
 		var motion = Vector2()
 		var yInput = Vector2()
@@ -150,6 +156,9 @@ func update_grid_position():
 func die():
 	if alive:
 		alive = false
+	hide()
+	collision_layer = 0
+	collision_mask = 0
 
 func increase_max_bombs():
 	maxBombs += 1
