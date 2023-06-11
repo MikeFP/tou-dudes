@@ -71,6 +71,12 @@ func _physics_process(_delta):
 		
 		motion = (yInput + xInput).normalized() * speed
 		
+		# FIXME: For some reason, this movement logic makes the Speed
+		# powerup bugged. The speed increase is only noticeable once
+		# the speed changes to a multiple of the initial speed
+		# (that is, `speed = initial_speed * n`). The problem might be
+		# linked to the amount of collisions around the player, which
+		# could be limiting the slide vector somehow.
 		var newV = move_and_slide(motion, Vector2(), false, 1)
 		position = oldPos
 		
