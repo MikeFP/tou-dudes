@@ -1,9 +1,12 @@
 extends Node2D
 
+export var enabled := false
+
 onready var controller = get_parent()
 
 func _ready():
-	test_routine()
+	if enabled:
+		test_routine()
 
 func test_routine():
 	yield(get_tree(), "idle_frame")

@@ -99,11 +99,12 @@ points = PoolVector2Array( 16, 16, 0, 16, 0, 0, 16, 0 )
 4/z_index = 0
 
 [node name="Map" type="Node2D"]
-position = Vector2( 16, 16 )
+position = Vector2( 46, 46 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_horizontal_guides_": [ 40.0 ]
 }
+powerup_spawn_probability = 1.0
 borderShaderMaterial = ExtResource( 1 )
 glowColor = Color( 0.447059, 0.298039, 0.109804, 1 )
 

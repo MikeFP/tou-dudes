@@ -1,9 +1,9 @@
 extends Node2D
 
-var destructure_scene = preload("res://scenes/destructure.tscn")
-
 export var world_columns = 13
 export var generate_deconstructs = true
+export var powerup_spawn_probability := 0.25
+export var obstacle_spawn_probability := 0.5
 
 export var borderShaderMaterial: ShaderMaterial
 export var glowColor: Color
@@ -14,7 +14,7 @@ var TileType = Global.TileType
 
 onready var tileMap: TileMap = $TileMap
 
-var rng = RandomNumberGenerator.new()
+var rng := RandomNumberGenerator.new()
 var originalColor = Vector3(1.0, 1.0, 1.0)
 var glowSpeed = 1.0
 var transitionToWhite = false
@@ -31,6 +31,35 @@ var cellTypeIds = {
 var cellTypeIndexes = {}
 
 var grid_map = {}
+
+var destructure_scene = preload("res://scenes/destructure.tscn")
+
+var powerup_data = [
+	{
+		"name": "ammo",
+		"probability_weight": 1.0,
+	},
+	{
+		"name": "hold",
+		"probability_weight": 0.25,
+	},
+	{
+		"name": "intensity",
+		"probability_weight": 1.0,
+	},
+	{
+		"name": "kick",
+		"probability_weight": 0.5,
+	},
+	{
+		"name": "punch",
+		"probability_weight": 0.25,
+	},
+	{
+		"name": "speed",
+		"probability_weight": 0.75,
+	},
+]
 
 func _ready():
 	rng.randomize()
@@ -73,7 +102,7 @@ func _process_shader(delta):
 		transitionToWhite = not transitionToWhite
 
 func _generate_map():
-	var destructRatio = 0.65
+	var destructRatio = obstacle_spawn_probability
 	
 	var n = world_columns
 	var l = 0
@@ -132,6 +161,22 @@ func instance_destructure(col, line):
 
 func _destructure_destroyed(destructure, col, line):
 	delete_cell_content(col, line, destructure)
+	maybe_spawn_powerup(col, line)
+
+func maybe_spawn_powerup(col: int, line: int):
+	var should_spawn := rng.randf_range(0.0, 1.0) < powerup_spawn_probability
+
+	if not should_spawn:
+		return
+
+	var powerup_options := []
+	var weights := []
+	for powerup in powerup_data:
+		powerup_options.append(powerup)
+		weights.append(powerup.probability_weight)
+
+	var choice = Global.random_choice(powerup_options, weights)
+	instance_powerup(col, line, choice.name)
 
 func instance_powerup(col, line, powerup_name):
 	var powerup = Provider.instance_powerup(powerup_name)
@@ -142,7 +187,7 @@ func instance_powerup(col, line, powerup_name):
 	register_cell_content(col, line, powerup)
 
 func _powerup_gone(powerup, col, line):
-		delete_cell_content(col, line, powerup)
+	delete_cell_content(col, line, powerup)
 
 func register_cell_content(col, line, content):
 	var c = int(col)
