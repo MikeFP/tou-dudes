@@ -3,6 +3,8 @@
 > A recreation of [Bomberman 5](https://pt.wikipedia.org/wiki/Super_Bomberman_5) made with the
 > [Godot](https://godotengine.org/) engine, for educational purposes.
 
+![Screenshot of the game](docs/screenshot.png)
+
 ## Features
 
 - 2 players on the same machine, with fixed controls.
